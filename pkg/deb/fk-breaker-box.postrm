@@ -1,0 +1,7 @@
+#! /bin/bash
+
+PACKAGE=fk-breaker-box
+if [ "$1" = "purge" ];then
+	rm -rf "/var/lib/$PACKAGE" "/etc/init.d/$PACKAGE" "/etc/$PACKAGE"
+fi
+

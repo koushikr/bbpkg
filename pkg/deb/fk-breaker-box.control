@@ -1,0 +1,10 @@
+Package: fk-breaker-box
+Version: VERSION 
+Section: web
+Priority: Optional
+Architecture: all
+Essential: no
+Installed-Size: 1000
+Depends:oracle-java7-installer
+Maintainer: Koushik R ramachandra.as@flipkart.com
+Description: BreakerBox

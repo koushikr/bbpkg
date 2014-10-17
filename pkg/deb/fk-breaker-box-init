@@ -1,0 +1,56 @@
+PACKAGE=fk-breaker-box
+USERNAME=fk-supply-chain
+
+get_status() {
+    status=`curl -s -o /dev/null -I -w "%{http_code}" http://localhost:8080`
+    echo $status
+}
+
+start() {
+    echo "Starting $PACKAGE..."
+    ulimit -n 30000
+    cd /var/lib/$PACKAGE
+    sudo -u $USERNAME java -Darchaius.configurationSource.additionalUrls=file:/etc/$PACKAGE/fk-bb-config.properties -jar fk-breaker-box.jar server /etc/$PACKAGE/breakerbox.yml > /dev/null 2>&1 &	
+    while [ $(get_status) != "200" ]; do
+        sleep 3
+        echo "Waiting for successful ping from application..."
+    done
+    echo "Started $PACKAGE."
+}
+
+stop() {
+    pkill -TERM -f "breakerbox.yml"
+    sleep 5
+    echo "Stopped $PACKAGE."
+}
+
+force_kill() {
+    pkill -KILL -f "breakerbox.yml"
+    echo "Force killed $PACKAGE."
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+	start)
+        start
+	;;
+	stop)
+		stop
+	;;
+	force_kill)
+	    force_kill
+	;;
+	restart)
+        restart
+    ;;
+	*)
+		echo "USAGE: $0 start | stop | restart | force_kill"
+		exit 3
+	;;
+esac		
+
+
